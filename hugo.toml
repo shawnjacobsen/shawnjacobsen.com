@@ -1,4 +1,10 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://shawnjacobsen.com'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Shawn Jacobsen'
 theme = "m10c"
+
+[params]
+author = "Shawn Jacobsen"
+description = "Software Engineer"
+avatar = 'images/shawn_jacobsen_headshot.jpg'
+favicon = 'favicon.ico'
