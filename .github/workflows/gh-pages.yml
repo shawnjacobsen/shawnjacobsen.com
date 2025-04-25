@@ -2,38 +2,62 @@ name: Deploy Hugo site to Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
 
-# workflow-level permissions.
 permissions:
   contents: write
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  deploy:
+  build:
+    name: Build site
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source with submodules
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup Hugo
+      - name: Configure Pages environment
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: 'latest'
           extended: true
 
-      - name: Build
-        run: hugo --minify --logLevel info
+      - name: Build with Hugo
+        run: |
+          hugo \
+            --minify \
+            --baseURL "${{ steps.pages.outputs.base_url }}/" \
+            --logLevel info
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload build to Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          enable_jekyll: false
+          path: ./public
 
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
