@@ -6,5 +6,5 @@ theme = "m10c"
 [params]
 author = "Shawn Jacobsen"
 description = "Software Engineer"
-avatar = 'images/shawn_jacobsen_headshot.jpg'
+avatar = 'images/shawn_jacobsen_headshot1.jpg'
 favicon = 'favicon.ico'
